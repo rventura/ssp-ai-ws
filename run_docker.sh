@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Configure here an available port
 PORT=8888
