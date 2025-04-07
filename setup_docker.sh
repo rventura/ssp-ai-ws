@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Docker image
 IMAGE=quay.io/jupyter/pytorch-notebook
