@@ -6,6 +6,8 @@ from torch.utils.data import *
 from torchvision import datasets
 from torchvision.transforms import *
 from torchvision.io import decode_image
+import time
+
 
 # Download EuroSAT dataset
 full_dataset = datasets.EuroSAT(
@@ -25,7 +27,7 @@ train_dataset, validation_dataset, test_dataset = random_split(
 
 LABELS = ["A.Crop", "Forest", "Vegetation", "Highway", "Industrial", "Pasture", "P.Crop", "Residential", "River", "Sea/Lake"]
 
-batch_size = 64
+batch_size = 2000
 
 # Create data loaders.
 train_dataloader      = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
@@ -88,9 +90,38 @@ def train(dataloader, model, loss_fn, optimizer):
         optimizer.step()
         optimizer.zero_grad()
 
-        if batch % 20 == 0:
+        if True: # batch % 20 == 0:
             loss, current = loss.item(), (batch + 1) * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+
+# DELME
+def train_timed(dataloader, model, loss_fn, optimizer):
+    size = len(dataloader.dataset)
+    model.train()
+    t0 = time.monotonic()
+    for batch, (X, y) in enumerate(dataloader):
+        print(f"0: {time.monotonic()-t0}")
+        X, y = X.to(device), y.to(device)
+        print(f"1: {time.monotonic()-t0}")
+
+        # Compute prediction error
+        pred = model(X)
+        print(f"2: {time.monotonic()-t0}")
+        loss = loss_fn(pred, y)
+        print(f"3: {time.monotonic()-t0}")
+
+        # Backpropagation
+        loss.backward()
+        print(f"4: {time.monotonic()-t0}")
+        optimizer.step()
+        print(f"5: {time.monotonic()-t0}")
+        optimizer.zero_grad()
+        print(f"6: {time.monotonic()-t0}")
+
+        if True: # batch % 20 == 0:
+            loss, current = loss.item(), (batch + 1) * len(X)
+            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+        print(f"7: {time.monotonic()-t0}")
 
 
 
@@ -112,8 +143,9 @@ def test(dataloader, model, loss_fn):
 
 
 
-epochs = 20
+epochs = 100
 best_accuracy = None
+t0 = time.monotonic()
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
     train(train_dataloader, model, loss_fn, optimizer)
@@ -124,7 +156,8 @@ for t in range(epochs):
         best_model = model.state_dict()
     print("Test: ", end="")
     test(test_dataloader, model, loss_fn)
-print("Training done!")
+dt = time.monotonic() - t0
+print(f"Training done! ({dt} secs)")
 model.load_state_dict(best_model)
 print(f"Loaded model with best accuracy: {(100*best_accuracy):>0.1f}%")
 
