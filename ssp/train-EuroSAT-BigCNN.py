@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import torch
 from torch import nn
 from torch.utils.data import *
@@ -27,7 +28,7 @@ train_dataset, validation_dataset, test_dataset = random_split(
 
 LABELS = ["A.Crop", "Forest", "Vegetation", "Highway", "Industrial", "Pasture", "P.Crop", "Residential", "River", "Sea/Lake"]
 
-batch_size = 2000
+batch_size = int(sys.argv[2])
 
 # Create data loaders.
 train_dataloader      = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
@@ -36,6 +37,8 @@ test_dataloader       = DataLoader(test_dataset, batch_size=batch_size)
 
 device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
 print(f"Using {device} device")
+
+torch.accelerator.set_device_index(int(sys.argv[1]))
 
 import torch.nn.functional as F
 
@@ -90,9 +93,9 @@ def train(dataloader, model, loss_fn, optimizer):
         optimizer.step()
         optimizer.zero_grad()
 
-        if True: # batch % 20 == 0:
-            loss, current = loss.item(), (batch + 1) * len(X)
-            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+        # if True: # batch % 20 == 0:
+        #     loss, current = loss.item(), (batch + 1) * len(X)
+        #     print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
 # DELME
 def train_timed(dataloader, model, loss_fn, optimizer):
@@ -157,14 +160,10 @@ for t in range(epochs):
     print("Test: ", end="")
     test(test_dataloader, model, loss_fn)
 dt = time.monotonic() - t0
-print(f"Training done! ({dt} secs)")
+print(f"TIME {sys.argv[1]} {dt}")
 model.load_state_dict(best_model)
 print(f"Loaded model with best accuracy: {(100*best_accuracy):>0.1f}%")
 
-
-
-torch.save(model.state_dict(), "model.pth")
-print("Saved PyTorch Model State to model.pth")
-
-
-
+fn = f"model-{sys.argv[1]}.pth"
+torch.save(model.state_dict(), fn)
+print(f"Saved PyTorch Model State to {fn}")
