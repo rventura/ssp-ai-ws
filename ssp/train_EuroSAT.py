@@ -11,8 +11,9 @@ import torch.multiprocessing
 import time
 import pickle
 
-from models_EuroSAT import BigCNN
+from models_EuroSAT import *
 
+BS_VALUES = [32, 64, 128, 256, 512, 1024, 2048, 4096]
 
 def train(dataloader, model, loss_fn, optimizer):
     total_loss = 0
@@ -78,7 +79,7 @@ def worker_job(batch_size):
     device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
     torch.accelerator.set_device_index(gpu_id)
 
-    model = BigCNN().to(device)
+    model = VGG16().to(device)
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
@@ -93,12 +94,12 @@ def worker_job(batch_size):
         if best_accuracy is None or val_acc>best_accuracy:
             best_accuracy = val_acc
             best_model = model.state_dict()
-        test_acc = test(test_dataloader, model, loss_fn)
-        results["epochs"].append((float(loss), val_acc, test_acc))
+        results["epochs"].append((float(loss), val_acc))
     dt = time.monotonic() - t0
     results["time"] = dt
     results["best_accuracy"] = best_accuracy
     model.load_state_dict(best_model)
+    results["test_accuracy"] = test(test_dataloader, model, loss_fn)
     torch.save(model.state_dict(), f"model-{batch_size}.pth")
     with open(f"results-{batch_size}.dat", "wb") as fh:
         pickle.dump(results, fh)
@@ -113,7 +114,7 @@ def main():
 
     gpu_pool = torch.multiprocessing.Pool(N_GPUS, worker_init, [gpuid_queue])
 
-    gpu_pool.map(worker_job, [32, 64, 128, 256, 512, 1024, 2048, 4096])
+    gpu_pool.map(worker_job, BS_VALUES)
 
 
 
