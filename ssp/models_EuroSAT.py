@@ -84,5 +84,55 @@ class VGG16(nn.Module):
             nn.Linear(4096, 10),
             nn.Softmax(1))
 
+
+class VGG16x(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            # 3x64x64
+            nn.Conv2d(3, 64, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(64, 64, kernel_size=3, padding=1),
+            nn.ReLU(),
+            # 64x64x64
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(128, 128, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            # 128x32x32
+            nn.Conv2d(128, 256, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(256, 256, kernel_size=3, padding=1),
+            nn.ReLU(),
+            # 256x32x32
+            nn.Conv2d(256, 512, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(512, 512, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(512, 512, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(2),
+            # 512x16x16
+            nn.Conv2d(512, 512, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(512, 512, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(512, 512, kernel_size=3, padding=1),
+            nn.ReLU(),
+            # 512x16x16
+            nn.Flatten(),
+            nn.Linear(512*16*16, 4096),
+            nn.ReLU(),
+            nn.Linear(4096, 4096),
+            nn.ReLU(),
+            nn.Linear(4096, 4096),
+            nn.ReLU(),
+            nn.Linear(4096, 10),
+            nn.Softmax(1))
+
+
     def forward(self, x):
         return self.net(x)

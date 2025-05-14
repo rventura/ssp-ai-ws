@@ -13,7 +13,7 @@ import pickle
 
 from models_EuroSAT import *
 
-BS_VALUES = [32, 64, 128, 256, 512, 1024, 2048, 4096]
+BS_VALUES = [64, 128, 256, 512, 1024, 2048]
 
 def train(dataloader, model, loss_fn, optimizer):
     total_loss = 0
@@ -79,7 +79,7 @@ def worker_job(batch_size):
     device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
     torch.accelerator.set_device_index(gpu_id)
 
-    model = VGG16().to(device)
+    model = VGG16x().to(device)
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
