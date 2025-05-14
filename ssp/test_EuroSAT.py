@@ -27,7 +27,6 @@ full_dataloader      = DataLoader(full_dataset)
 device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
 print(f"Using {device} device")
 
-
 model = VGG16().to(device)
 model.load_state_dict(torch.load(sys.argv[1], weights_only=True))
 
