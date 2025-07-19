@@ -4,6 +4,13 @@
 
 This repository contains supplementary material for the author's workshop on Artificial Intelligence (AI) lectured at the Space Studies program of the International Space University (https://www.isunet.edu/). It features a set of Jupyter notebooks showing simple examples of neural network models and their use.
 
+The provided examples are described below:
+* `1_classifier-MINST.ipynb` -- classification of handwritten digits (MNIST dataset)
+* `2_classifier-EuroSAT.ipynb` -- classification of satellite images (EuroSAT dataset)
+* `3_autoencoder-MNIST.ipynb` -- unsupervised learning using an autoencoder (MNIST dataset)
+
+All of these notebooks reside in the `ssp` folder inside the repository,
+
 ## Installation and startup instructions
 
 There are two possible ways to install the software: __locally__, provided your computer has a modern Python installed, or through a __docker__ container, probided you have docker installed.
