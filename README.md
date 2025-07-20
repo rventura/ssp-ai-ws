@@ -1,8 +1,8 @@
-# Machine learning examples for the SSP workshop on AI
+# Machine learning examples for the ISU SSP workshop on AI
 
 ## Description
 
-This repository contains supplementary material for the author's workshop on Artificial Intelligence (AI) lectured at the Space Studies program of the International Space University (https://www.isunet.edu/). It features a set of Jupyter notebooks showing simple examples of neural network models and their use.
+This repository contains supplementary material for the author's workshop on Artificial Intelligence (AI) lectured at the Space Studies Program (SSP) of the International Space University (https://www.isunet.edu/). It features a set of Jupyter notebooks showing simple examples of neural network models and their use.
 
 The provided examples are described below:
 * `1_classifier-MINST.ipynb` -- classification of handwritten digits (MNIST dataset)
